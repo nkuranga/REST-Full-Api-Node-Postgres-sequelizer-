@@ -10,7 +10,14 @@ module.exports= {
                 model: Course,
                 as : 'course'
             }]
-        }).then((lecturer)=> res.status(200).send(lecturer))
+        }).then((lecturer)=> {
+            if(!lecturer){
+                return res.statu(404).send({
+                    message: "Lecturer Not Found"
+                })
+            }
+            return res.status(200).send(lecturer)
+        })
         .catch((error)=> {
             res.status(400).send(error)
             console.log(error)
@@ -24,12 +31,7 @@ module.exports= {
                 model: Course,
                 as : 'course'
             }]
-        }).then((lecturer)=> {
-            if(!lecturer){
-                message: "not found"
-            }
-            res.status(200).send(lecturer)
-        })
+        }).then((lecturer)=> res.status(200).send(lecturer))
         .catch((error)=> res.status(400).send(error))
     },
     updateLecturer(req, res){
@@ -41,7 +43,7 @@ module.exports= {
                     })
                 }
                 return lecturer.update({
-                    lecturer_name:req.body.lecture_name || lecturer.lecture_name
+                    lecturer_name:req.body.lecturer_name || lecturer.lecture_name
                 }).then((lecturer)=> res.status(200).send(lecturer))
                 .catch((error)=>{
                     res.status(200).send(error)
@@ -59,6 +61,21 @@ module.exports= {
             .then((lecturer)=> res.status(201).send(lecturer))
             .catch((error)=> res.status(400).send(error))
     },
+    addWithCourse(req, res){
+        return Lecturer.create({
+            lecturer_name: req.body.lecture_name,
+            course: req.body.course
+        },{
+            include:[{
+                model: Course,
+                as: 'course'
+            }]
+        }).then((lecturer)=>{res.status(200).send({
+            message: 'Lecturer Added'
+            })
+        }).catch((error)=> res.status(400).send(error))
+
+    },
     deleteLecturer(req, res){
         return Lecturer.findByPk(req.params.id,{
             include:[{
@@ -72,7 +89,7 @@ module.exports= {
                 })
             }
             return lecturer.destroy().then(
-                (lecture)=> res.status(201).send(lecture)
+                (lecture)=> res.status(200).send(lecture)
             ).catch((error)=> res.status(400).send(error))
         }).catch((error)=> res.status(400).send(error))
     }

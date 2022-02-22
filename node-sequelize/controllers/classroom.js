@@ -42,7 +42,8 @@ module.exports = {
 
   add(req, res) {
     const classroomDetails = req.body
-    return Classroom.create(classroomDetails)
+    return Classroom
+      .create(classroomDetails)
       .then((classroom) => res.status(201).send(classroom))
       .catch((error) => res.status(400).send(error))
   },
